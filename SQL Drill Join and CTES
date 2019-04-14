@@ -1,0 +1,78 @@
+Thinkful SQL Drills
+What are the three longest trips on rainy days?
+WITH 
+	rainy
+AS (
+	SELECT
+		zip
+	FROM
+		weather
+	WHERE
+		events= 'Rain'
+GROUP BY 1
+)
+	SELECT
+		trips.trip_id,
+		trips.duration,
+		trips.zip_code
+	FROM
+	trips
+	JOIN 
+	rainy
+	ON trips.zip_code = rainy.zip
+	ORDER BY duration DESC
+LIMIT 3
+
+Which station is full most often?
+SELECT
+	stations.station_id,
+	stations.name,
+	status.station_id,
+	status.docks_available
+	
+FROM
+	status
+JOIN
+	stations
+ON
+	stations.station_id = status.station_id
+GROUP BY 1,2,3,4
+ORDER BY docks_available ASC
+
+Return a list of stations with a count of number of trips starting at that station but ordered by dock count.
+SELECT
+	stations.name,
+	stations.dockcount,
+	COUNT(*)
+FROM
+	stations
+JOIN
+	trips
+ON
+	stations.name = trips.start_station
+GROUP BY 1,2
+ORDER BY dockcount DESC
+
+(Challenge) What's the length of the longest trip for each day it rains anywhere?
+WITH rainy as 
+(
+SELECT 
+DATE(date) rain_date
+From weather
+WHERE events = 'Rain'
+GROUP BY 1
+) 
+SELECT 
+duration,
+DATE(start_date) start_date1
+FROM
+trips
+JOIN
+rainy
+ON
+DATE(trips.start_date) = DATE(rainy.rain_date)
+GROUP by 1,2
+ORDER BY duration DESC
+
+
+
